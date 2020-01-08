@@ -11,6 +11,8 @@ public class Target : MonoBehaviour
     private float maxTorque = 10;
     private float xRange = 4;
     private float ySpawnPos = -6;
+
+    public ParticleSystem explosionParticle;
     public int pointValue;
 
     // Start is called before the first frame update
@@ -29,14 +31,28 @@ public class Target : MonoBehaviour
         
     }
 
+    private void OnMouseDown()
+    {
+        if(gameManager.isGameActive)
+        {
+            Destroy(gameObject);
+            Instantiate(explosionParticle, transform.position, explosionParticle.transform.rotation);
+            gameManager.UpdateScore(pointValue);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Destroy(gameObject);
+        if(!gameObject.CompareTag("Bad"))
+        {
+            gameManager.GameOver();
+        }
+    }
+
     Vector3 RandomForce()
     {
         return Vector3.up * Random.Range(minSpeed, maxSpeed);
-    }
-
-    Vector3 RandomSpawnPos()
-    {
-        return new Vector3(Random.Range(-xRange, xRange), ySpawnPos);
     }
 
     float RandomTorque()
@@ -44,14 +60,8 @@ public class Target : MonoBehaviour
         return Random.Range(-maxTorque, maxTorque);
     }
 
-    private void OnMouseDown()
+    Vector3 RandomSpawnPos()
     {
-        Destroy(gameObject);
-        gameManager.UpdateScore(pointValue);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Destroy(gameObject);
+        return new Vector3(Random.Range(-xRange, xRange), ySpawnPos);
     }
 }
